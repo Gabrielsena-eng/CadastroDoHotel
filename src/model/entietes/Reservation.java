@@ -1,5 +1,7 @@
 package model.entietes;
 
+import model.entietes.excepetions.DomainException;
+
 import javax.xml.crypto.Data;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -14,6 +16,9 @@ public class Reservation {
     private  static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
     public Reservation(Integer roomNumber, Date checkIn, Date checkOut) {
+        if (!checkOut.after(checkIn)) {
+            throw new DomainException ("Check-out date must be after check-in date");
+        }
         this.roomNumber = roomNumber;
         this.checkIn = checkIn;
         this.checkOut = checkOut;
@@ -40,9 +45,19 @@ public class Reservation {
         return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
     }
 
-    public void updatesDate(Date checkIn, Date checkOut){
+    public void updatesDates(Date checkIn, Date checkOut) {
+        Date now = new Date();
+
+        if (checkIn.before(now) || checkOut.before(now)) {
+            throw new DomainException ("Reservation dates for updates must be future dates");
+        }
+        if (!checkOut.after(checkIn)) {
+            throw new DomainException ("Check-out date must be after check-in date");
+        }
+
         this.checkIn = checkIn;
         this.checkOut = checkOut;
+
     }
 
     @Override
